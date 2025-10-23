@@ -6,19 +6,36 @@ public class MainClass
 {
     public static void Main()
     {
-        string w = "петон";
-        string ans = "*****";
+        string ss = ("рандон кардон картон картоф");               
+        string[] sss = ss.Split(' ');
+        string w = sss[new Random().Next(1, 4)]; ;
+        string ans = "******";
         int f = 0;
         int s = 0;
         while(f == 0)
         {
-            int x = new Random().Next(1, 10);
+            string sn = ("1 2 3 350 450 550 500 750 850 700 600 650");
+            string[] sns = ss.Split(' ');
+            int x = int.Parse(sns[new Random().Next(1, 12)]);
             string hid = "";
             Console.WriteLine("Вращайте барабан");
-            Console.WriteLine("Выпало баллов " + x);
-            if (x != 6)
+            if (x == 1) {
+                Console.WriteLine("Банкрот");
+                break;
+            }
+            if (x == 2)
             {
-
+                Console.WriteLine("Очки умножаются на 2");
+            }
+            if (x == 3)
+            {
+                Console.WriteLine("Выберите номер любой буквы");
+                
+            }
+            
+            else 
+            {
+                Console.WriteLine("Выпало баллов " + x);
                 Console.WriteLine("угадывайте букву");
                 string inp = Console.ReadLine();
                 for (int i = 0; i < 5; i++)
@@ -28,7 +45,7 @@ public class MainClass
                     {
                         hid += inp;
                         s += x;
-                        
+
 
                     }
                     else
@@ -41,11 +58,7 @@ public class MainClass
                 Console.WriteLine("Сумма баллов " + s);
 
             }
-            else
-            {
-                Console.WriteLine("Банкрот");
-                break;
-            }
+            
 
         }
     }
