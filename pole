@@ -5,7 +5,7 @@ public class MainClass
 {
     static Dictionary<string, int> scores = new Dictionary<string, int>();
     static List<int> coefficients = new List<int> { 10, 15, 20, 25, 30, 35, 40, 45 };
-    static int questionCount = 6; // минимальное количество вопросов по умолчанию
+    static int questionCount = 6;
     
     public static void Main()
     {
