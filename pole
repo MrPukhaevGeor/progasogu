@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 
 public class MainClass
 {
     static Dictionary<string, int> scores = new Dictionary<string, int>();
     static List<int> coefficients = new List<int> { 10, 15, 20, 25, 30, 35, 40, 45 };
     static int questionCount = 6;
-    
+    static string path = @"D:\GGeor_Pukhaev\first_project\ques.txt";
+    static string[] zv = [];
     public static void Main()
     {
         while (true)
         {
+            
             Console.WriteLine("Кто ты? (админ/игрок/выход)");
             string who = Console.ReadLine();
-            
+
             if (who == "админ")
             {
-                AdminMode();
+                Console.WriteLine("1 -  изменить количество вопросов, 2 - добавить вопрос, 3 - удалить вопрос на 1 игры");
+                int a = int.Parse(Console.ReadLine());
+                AdminMode(a);
             }
             else if (who == "игрок")
             {
@@ -26,40 +31,58 @@ public class MainClass
             {
                 break;
             }
+            FileCreate(MakeQuestions());
         }
     }
-    
-    static void AdminMode()
+
+    static void AdminMode(int a)
     {
-        Console.WriteLine("Сколько вопросов? (минимум 6)");
-        int count = int.Parse(Console.ReadLine());
-        
-        if (count < 6)
+        if (a == 1)
         {
-            Console.WriteLine("Меньше 6 нельзя, ставим 6");
-            count = 6;
+            Console.WriteLine("Сколько вопросов? (минимум 6)");
+            int count = int.Parse(Console.ReadLine());
+
+            if (count < 6)
+            {
+                Console.WriteLine("Меньше 6 нельзя, ставим 6");
+                count = 6;
+            }
+
+            questionCount = count;
+            coefficients.Clear();
+
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine("Баллы за вопрос " + (i + 1) + ":");
+                int points = int.Parse(Console.ReadLine());
+                coefficients.Add(points);
+            }
+
+            Console.WriteLine("Установлено " + questionCount + " вопросов");
+
+            Console.WriteLine("Сколько вопросов? (минимум 6)");
         }
-        
-        questionCount = count;
-        coefficients.Clear();
-        
-        for (int i = 0; i < count; i++)
+        if ( a == 2)
         {
-            Console.WriteLine("Баллы за вопрос " + (i+1) + ":");
-            int points = int.Parse(Console.ReadLine());
-            coefficients.Add(points);
+            Console.WriteLine("Впишите вопрос и ответ через ;");
+            MakeQues(Console.ReadLine());
+
         }
-        
-        Console.WriteLine("Установлено " + questionCount + " вопросов");
+        if (a == 3)
+        {
+            Console.WriteLine("Впишите вопрос для удаления");
+            DelQues(Console.ReadLine());
+        }
     }
     
+
     static void PlayerMode()
     {
         string name = GetName();
-        
+
         Console.WriteLine("Что хочешь? (игра/рекорды)");
         string choice = Console.ReadLine();
-        
+
         if (choice == "игра")
         {
             PlayGame(name);
@@ -69,22 +92,21 @@ public class MainClass
             ShowRecords();
         }
     }
-    
+
     static string GetName()
     {
         Console.WriteLine("Как тебя звать?");
         return Console.ReadLine();
     }
-    
+
     static void PlayGame(string name)
     {
         var questions = MakeQuestions();
         questions = MixQuestions(questions);
-        
         int score = AskQuestions(questions);
         int points = CalculatePoints(score);
-        string res = GetRes(score);
-        
+        string res = GetRes(score, questionCount);
+
         if (scores.ContainsKey(name))
         {
             if (points > scores[name])
@@ -96,50 +118,63 @@ public class MainClass
         {
             scores[name] = points;
         }
-        
+
         Console.WriteLine(name + ", ты: " + res + " (" + points + " очков)");
-        
+
         bool again = AskAgain();
         if (again)
         {
             PlayGame(name);
         }
     }
-    
+
     static Dictionary<string, string> MakeQuestions()
     {
-        return new Dictionary<string, string>
+        Dictionary<string, string> ques = new Dictionary<string, string>();
+        foreach (string line in File.ReadAllLines(path))
         {
-            {"2+2*2?", "6"},
-            {"10 частей из бревна - сколько распилов?", "9"},
-            {"2 матери по 5 сыновей - всего детей?", "7"},
-            {"Месяцев с 28 днями?", "12"},
-            {"Килограмм пуха или железа?", "одинаково"},
-            {"Как называется асфальтированная дорога?", "трасса"},
-            {"Когда достроят стадион?", "летом следующего года"},
-            {"Чем отличается YOLO от обычных CNN?", "одним проходом"},
-            {"Что делает Таганрог?", "бухает"}
-        };
+            string[] s = line.Split(";");
+            if (zv.Contains(s[0]))
+            {
+                ques.Add(s[0], s[1]);
+            }
+        }
+        return ques;
+
+        //return new Dictionary<string, string>
+        //{
+        //    {"2+2*2?", "6"},
+        //    {"10 частей из бревна, сколько распилов?", "9"},
+        //    {"В?", "смыси"},
+        //    {"Сколько месяцев с 28 днями?", "12"},
+        //    {"Килограмм пуха или железа?", "одинаково"},
+        //    {"Как называется асфальтированная дорога?", "трасса"},
+        //    {"Когда достроят стадион?", "летом следующего года"},
+        //    {"Чем отличается YOLO от обычных CNN?", "как это сюда попало"},
+        //    {"Что делает Таганрог?", "бухает"}
+        //};
     }
-    
+
     static Dictionary<string, string> MixQuestions(Dictionary<string, string> q)
     {
         var mixed = new Dictionary<string, string>();
         var keys = new List<string>(q.Keys);
-        
+
         var rnd = new Random();
-        
+
         while (keys.Count > 0)
         {
             int i = rnd.Next(keys.Count);
+
             string key = keys[i];
             mixed[key] = q[key];
+
             keys.RemoveAt(i);
         }
-        
+
         return mixed;
     }
-    
+
     static int AskQuestions(Dictionary<string, string> q)
     {
         int right = 0;
@@ -158,7 +193,7 @@ public class MainClass
         }
         return right;
     }
-    
+
     static int CalculatePoints(int rightAnswers)
     {
         int points = 0;
@@ -168,21 +203,35 @@ public class MainClass
         }
         return points;
     }
-    
-    static string GetRes(int a)
+
+    static string GetRes(int a, int x)
     {
         string[] res = ["идиот", "кретин", "дурак", "нормальный", "талант", "гений"];
-        if (a >= res.Length) return res[res.Length - 1];
-        return res[a];
+        double b = a;
+        double c = x;
+        double proc = b / x;
+        int f = 0;
+        for (int z = 0; z < res.Length; z++)
+        {
+            if (proc - 5 < (z + 1) * 16)
+            {
+                f = z;
+                break;
+            }
+            
+
+        }
+        return res[f];
+
     }
-    
+
     static bool AskAgain()
     {
         Console.WriteLine("Еще раз? (да/нет)");
         string a = Console.ReadLine();
         return a.ToLower() == "да";
     }
-    
+
     static void ShowRecords()
     {
         Console.WriteLine("Рекорды:");
@@ -190,5 +239,28 @@ public class MainClass
         {
             Console.WriteLine(record.Key + ": " + record.Value + " очков");
         }
+    }
+    static void FileCreate(Dictionary<string, string> qs)
+    {
+        using (StreamWriter writer = new StreamWriter(path, true))
+        {
+            foreach(var q in qs)
+            {
+               writer.WriteLineAsync(q.Key + ";" + q.Value);
+            }
+        }
+    }
+    static void MakeQues(string a)
+    {
+        using (StreamWriter writer = new StreamWriter(path, true))
+        {
+           
+                writer.WriteLineAsync(a);
+            
+        }
+    }
+    static void DelQues(string a)
+    {
+        zv.Append(a);
     }
 }
