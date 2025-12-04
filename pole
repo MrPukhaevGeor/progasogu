@@ -7,13 +7,15 @@ public class MainClass
     static Dictionary<string, int> scores = new Dictionary<string, int>();
     static List<int> coefficients = new List<int> { 10, 15, 20, 25, 30, 35, 40, 45 };
     static int questionCount = 6;
-    static string path = @"D:\GGeor_Pukhaev\first_project\ques.txt";
-    static string[] zv = [];
+    static string path_q = @"D:\GGeor_Pukhaev\first_project\ques.txt";
+    static string pat = @"D:\GGeor_Pukhaev\first_project\ques.txt";
+    static List<string> zv = new List<string>();
     public static void Main()
     {
+
         while (true)
         {
-            
+
             Console.WriteLine("Кто ты? (админ/игрок/выход)");
             string who = Console.ReadLine();
 
@@ -31,7 +33,7 @@ public class MainClass
             {
                 break;
             }
-            FileCreate(MakeQuestions());
+
         }
     }
 
@@ -62,7 +64,7 @@ public class MainClass
 
             Console.WriteLine("Сколько вопросов? (минимум 6)");
         }
-        if ( a == 2)
+        if (a == 2)
         {
             Console.WriteLine("Впишите вопрос и ответ через ;");
             MakeQues(Console.ReadLine());
@@ -74,7 +76,7 @@ public class MainClass
             DelQues(Console.ReadLine());
         }
     }
-    
+
 
     static void PlayerMode()
     {
@@ -131,14 +133,16 @@ public class MainClass
     static Dictionary<string, string> MakeQuestions()
     {
         Dictionary<string, string> ques = new Dictionary<string, string>();
-        foreach (string line in File.ReadAllLines(path))
+        foreach (string line in File.ReadAllLines(path_q))
         {
             string[] s = line.Split(";");
-            if (zv.Contains(s[0]))
+            if (!zv.Contains(s[0]))
             {
+                //Console.WriteLine(s[1]);
                 ques.Add(s[0], s[1]);
             }
         }
+        Console.WriteLine(ques);
         return ques;
 
         //return new Dictionary<string, string>
@@ -209,19 +213,29 @@ public class MainClass
         string[] res = ["идиот", "кретин", "дурак", "нормальный", "талант", "гений"];
         double b = a;
         double c = x;
-        double proc = b / x;
+        double proc = (b / x) * 100;
         int f = 0;
-        for (int z = 0; z < res.Length; z++)
+        if (proc == 0)
         {
-            if (proc - 5 < (z + 1) * 16)
-            {
-                f = z;
-                break;
-            }
-            
-
+            return res[0];
         }
-        return res[f];
+        if (proc < 20)
+        {
+            return res[1];
+        }
+        if (proc < 40)
+        {
+            return res[2];
+        }
+        if (proc < 60)
+        {
+            return res[3];
+        }
+        if (proc < 80)
+        {
+            return res[4];
+        }
+        return res[5];
 
     }
 
@@ -242,25 +256,56 @@ public class MainClass
     }
     static void FileCreate(Dictionary<string, string> qs)
     {
-        using (StreamWriter writer = new StreamWriter(path, true))
+        using (StreamWriter writer = new StreamWriter(path_q, true))
         {
-            foreach(var q in qs)
+            foreach (var q in qs)
             {
-               writer.WriteLineAsync(q.Key + ";" + q.Value);
+                writer.WriteLineAsync(q.Key + ";" + q.Value);
             }
         }
     }
     static void MakeQues(string a)
     {
-        using (StreamWriter writer = new StreamWriter(path, true))
+        int f = 1;
+        foreach (string line in File.ReadAllLines(path_q))
         {
-           
+            string[] s = line.Split(";");
+            if (a.Contains(s[0]))
+            {
+                f = 0;
+            }
+        }
+        if (f == 1)
+        {
+            using (StreamWriter writer = new StreamWriter(path_q, true))
+            {
+
+
                 writer.WriteLineAsync(a);
-            
+
+            }
         }
     }
     static void DelQues(string a)
     {
-        zv.Append(a);
+        if (!zv.Contains(a))
+        {
+            zv.Add(a);
+
+        }
+        else
+        {
+            Console.WriteLine("Вопрос уже в списке исключений");
+        }
+
+        //static string RecordsRecFile(scores )
+        //{
+
+
+        //}
+    }
+    static void AdingRec(string name, string rec)
+    {
+
     }
 }
