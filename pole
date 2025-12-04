@@ -298,11 +298,11 @@ public class MainClass
             Console.WriteLine("Вопрос уже в списке исключений");
         }
 
-        //static string RecordsRecFile(scores )
-        //{
+        static string RecordsRecFile(Dictionary<string, int> scores )
+        {
 
 
-        //}
+        }
     }
     static void AdingRec(string name, string rec)
     {
